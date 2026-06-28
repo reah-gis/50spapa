@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,10 @@
     <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
     <style>
         /* Base Reset */
         * {
@@ -140,7 +143,8 @@
             top: 45%;
             width: 10%;
             height: 21.67%;
-            pointer-events: none; /* Papa is static decor */
+            pointer-events: none;
+            /* Papa is static decor */
             z-index: 3;
         }
 
@@ -214,7 +218,7 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
         .ui-btn:hover {
@@ -241,15 +245,26 @@
             letter-spacing: 1px;
         }
 
-        /* Specific styles for the mute button to make it larger */
+        /* Specific styles for the mute button — same height as Despedida button */
         #btn-mute {
-            width: 75px;
-            height: 75px;
+            width: 50px;
+            height: 50px;
         }
 
         #btn-mute img {
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            transition: all 0.15s ease;
+            position: relative;
+            top: -2px;
+            left: -2px;
+        }
+
+        #btn-mute.muted img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
         }
 
         /* --- MODAL DIALOGS --- */
@@ -277,8 +292,10 @@
         }
 
         .modal-content {
-            width: 62.5%; /* Match 1000px/1600px */
-            height: 41.67%; /* Match 500px/1200px */
+            width: 62.5%;
+            /* Match 1000px/1600px */
+            height: 41.67%;
+            /* Match 500px/1200px */
             background: rgba(12, 12, 12, 0.95);
             border: 3px solid #d4af37;
             border-radius: 12px;
@@ -312,9 +329,11 @@
         .modal-body::-webkit-scrollbar {
             width: 8px;
         }
+
         .modal-body::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.2);
         }
+
         .modal-body::-webkit-scrollbar-thumb {
             background-color: #d4af37;
             border-radius: 4px;
@@ -339,7 +358,7 @@
             transition: background 0.2s, transform 0.2s;
             border-radius: 4px;
             z-index: 11;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
 
         .modal-close-btn:hover {
@@ -378,9 +397,12 @@
 
         /* Animations */
         @keyframes pulse-gold {
-            0%, 100% {
+
+            0%,
+            100% {
                 text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
             }
+
             50% {
                 text-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 0 5px #ffffff;
                 color: #f3d078;
@@ -388,8 +410,17 @@
         }
 
         @keyframes breathe {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.03); }
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.03);
+            }
         }
 
         /* Responsive UI adjust on small screen ratios */
@@ -398,32 +429,47 @@
                 width: 40px;
                 height: 40px;
             }
+
             .ui-btn img {
                 width: 18px;
                 height: 18px;
             }
+
             #btn-mute {
-                width: 55px;
-                height: 55px;
+                width: 40px;
+                height: 40px;
             }
+
             #btn-mute img {
-                width: 32px;
-                height: 32px;
+                width: 30px;
+                height: 30px;
+                object-fit: contain;
+                transition: all 0.15s ease;
             }
+
+            #btn-mute.muted img {
+                width: 30px;
+                height: 30px;
+                object-fit: contain;
+            }
+
             .btn-text {
                 padding: 0 10px;
                 font-size: 10px;
             }
+
             .modal-content {
                 width: 85%;
                 height: 60%;
             }
+
             .modal-body {
                 padding: 20px 25px;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="game-viewport">
@@ -451,14 +497,16 @@
         <!-- 2. SALON SCREEN -->
         <div id="screen-salon" class="screen">
             <!-- Background will be set in JS (sala.png) -->
-            
+
             <!-- Papa Pixel Decor -->
             <img class="room-element el-papa" src="papa pixel.png" alt="Papá">
 
             <!-- Clickable frames -->
-            <img class="room-element clickable-frame el-esther" src="Esther pixel.png" alt="Esther" data-person="esther">
+            <img class="room-element clickable-frame el-esther" src="Esther pixel.png" alt="Esther"
+                data-person="esther">
             <img class="room-element clickable-frame el-jordi" src="Jordi pixel.png" alt="Jordi" data-person="jordi">
-            <img class="room-element clickable-frame el-andrea" src="Andrea pixel.png" alt="Andrea" data-person="andrea">
+            <img class="room-element clickable-frame el-andrea" src="Andrea pixel.png" alt="Andrea"
+                data-person="andrea">
         </div>
 
         <!-- 3. FINAL SCREEN -->
@@ -486,7 +534,7 @@
         let state = "intro"; // "intro", "salon", "final"
         let activeModal = null;
         let musicMuted = false;
-        
+
         // DOM Elements
         const viewport = document.querySelector('.game-viewport');
         const screenIntro = document.getElementById('screen-intro');
@@ -494,15 +542,15 @@
         const screenFinal = document.getElementById('screen-final');
         const fadeOverlay = document.getElementById('fade-overlay');
         const uiControls = document.getElementById('ui-controls');
-        
+
         const btnMute = document.getElementById('btn-mute');
         const muteIcon = document.getElementById('mute-icon');
         const btnToggleFinal = document.getElementById('btn-toggle-final');
-        
+
         const messageModal = document.getElementById('message-modal');
         const modalText = document.getElementById('modal-text');
         const modalClose = document.getElementById('modal-close');
-        
+
         const bgMusic = document.getElementById('bg-music');
         const confettiCanvas = document.getElementById('confetti-canvas');
         const ctx = confettiCanvas.getContext('2d');
@@ -549,13 +597,13 @@
 
         function updateConfetti() {
             ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-            
+
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.y += p.speedY;
                 p.x += p.speedX;
                 p.rotation += p.rotationSpeed;
-                
+
                 // Draw square particle
                 ctx.save();
                 ctx.translate(p.x, p.y);
@@ -563,13 +611,13 @@
                 ctx.fillStyle = p.color;
                 ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
                 ctx.restore();
-                
+
                 // Remove if off screen
                 if (p.y > confettiCanvas.height) {
                     particles.splice(i, 1);
                 }
             }
-            
+
             requestAnimationFrame(updateConfetti);
         }
         updateConfetti();
@@ -577,16 +625,16 @@
         // Screen state transitions with Pygame fade-like feel
         function changeState(newState) {
             if (state === newState) return;
-            
+
             fadeOverlay.classList.add('fading');
-            
+
             setTimeout(() => {
                 // Disable current screen
                 document.querySelector('.screen.active').classList.remove('active');
-                
+
                 // Change state
                 state = newState;
-                
+
                 // Enable new screen
                 if (state === "intro") {
                     screenIntro.classList.add('active');
@@ -600,7 +648,7 @@
                     uiControls.style.display = "flex";
                     btnToggleFinal.textContent = "Salón";
                 }
-                
+
                 // Remove fade
                 fadeOverlay.classList.remove('fading');
             }, 300);
@@ -611,19 +659,24 @@
             musicMuted = !musicMuted;
             bgMusic.muted = musicMuted;
             muteIcon.src = musicMuted ? "muted.png" : "Sonido.png";
+            if (musicMuted) {
+                btnMute.classList.add('muted');
+            } else {
+                btnMute.classList.remove('muted');
+            }
         }
 
         // Event Listeners
-        
+
         // 1. Intro Click to Enter
         screenIntro.addEventListener('click', () => {
             // Lazy load background image to salon when entering
             screenSalon.style.backgroundImage = "url('sala.png')";
-            
+
             // Play music (required after interaction)
             bgMusic.volume = 0.25;
             bgMusic.play().catch(err => console.log("Audio autoplay prevented initially: ", err));
-            
+
             changeState("salon");
         });
 
@@ -677,7 +730,7 @@
         // Keyboard navigation (M for music, ESC for toggling Final/Salon, SPACE/ENTER on intro)
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
-            
+
             if (key === 'm') {
                 toggleMusic();
             } else if (e.key === 'Escape') {
@@ -694,4 +747,5 @@
         });
     </script>
 </body>
+
 </html>
