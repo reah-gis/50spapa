@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Felices 50 Papá!</title>
+    <link rel="icon" href="icono.png" type="image/png">
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: #0b0b0b;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Aspect ratio container for the 4:3 Room */
+        .game-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 133.33vh; /* 4:3 ratio based on viewport height */
+            max-height: 75vw;    /* 4:3 ratio based on viewport width */
+            aspect-ratio: 4 / 3;
+            background-color: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #333;
+        }
+
+        /* Screen States */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease-in-out;
+            z-index: 1;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #screen-intro {
+            background: linear-gradient(180deg, #1e1e1e 0%, #0a0a0a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4%;
+            cursor: pointer;
+        }
+
+        .gold-border {
+            position: absolute;
+            top: 3%;
+            bottom: 3%;
+            left: 3%;
+            right: 3%;
+            border: 4px solid #d4af37;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.2), 0 0 20px rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
+        }
+
+        .intro-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5.5vw, 4.5rem);
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 5%;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            animation: pulse-gold 3s infinite ease-in-out;
+            letter-spacing: 2px;
+        }
+
+        .intro-instructions {
+            font-size: clamp(0.9rem, 2vw, 1.4rem);
+            color: #e0e0e0;
+            text-align: center;
+            font-style: italic;
+            opacity: 0.8;
+            animation: breathe 2s infinite ease-in-out;
+        }
+
+        /* --- SALON SCREEN --- */
+        #screen-salon {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        /* Room elements using exact percentages */
+        .room-element {
+            position: absolute;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center bottom;
+        }
+
+        .clickable-frame {
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .clickable-frame:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.6));
+        }
+
+        /* Elements specific positions */
+        .el-papa {
+            left: 36.25%;
+            top: 45%;
+            width: 10%;
+            height: 21.67%;
+            pointer-events: none; /* Papa is static decor */
+            z-index: 3;
+        }
+
+        .el-esther {
+            left: 40.625%;
+            top: 20%;
+            width: 18.75%;
+            height: 18.33%;
+        }
+
+        .el-jordi {
+            left: 22.5%;
+            top: 21.67%;
+            width: 11.25%;
+            height: 15%;
+        }
+
+        .el-andrea {
+            left: 66.25%;
+            top: 21.67%;
+            width: 11.25%;
+            height: 15%;
+        }
+
+        /* --- FINAL SCREEN --- */
+        #screen-final {
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .final-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 5vw, 4rem);
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 3%;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            padding: 0 5%;
+        }
+
+        .final-sub {
+            font-size: clamp(0.8rem, 1.8vw, 1.2rem);
+            color: #a0a0a0;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* --- AUDIO & CONTROL BUTTONS --- */
+        .ui-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .ui-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .ui-btn:hover {
+            transform: scale(1.1);
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+
+        .ui-btn img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .btn-text {
+            border-radius: 20px;
+            width: auto;
+            padding: 0 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- MODAL DIALOGS --- */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: 62.5%; /* Match 1000px/1600px */
+            height: 41.67%; /* Match 500px/1200px */
+            background: rgba(12, 12, 12, 0.95);
+            border: 3px solid #d4af37;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(14px, 1.8vw, 22px);
+            line-height: 1.6;
+            color: #f5f5f5;
+            text-align: left;
+            /* Scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .modal-body::-webkit-scrollbar-thumb {
+            background-color: #d4af37;
+            border-radius: 4px;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #c80000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            border-radius: 4px;
+            z-index: 11;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .modal-close-btn:hover {
+            background: #ff0000;
+            transform: scale(1.1);
+        }
+
+        /* --- CONFETTI CANVAS --- */
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        /* --- FADE OVERLAY (Simulating Pygame's fade) --- */
+        .fade-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-overlay.fading {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes pulse-gold {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 0 5px #ffffff;
+                color: #f3d078;
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+
+        /* Responsive UI adjust on small screen ratios */
+        @media (max-width: 600px) {
+            .ui-btn {
+                width: 40px;
+                height: 40px;
+            }
+            .ui-btn img {
+                width: 18px;
+                height: 18px;
+            }
+            .btn-text {
+                padding: 0 10px;
+                font-size: 10px;
+            }
+            .modal-content {
+                width: 85%;
+                height: 60%;
+            }
+            .modal-body {
+                padding: 20px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-viewport">
+        <!-- Fade screen transitions -->
+        <div id="fade-overlay" class="fade-overlay"></div>
+
+        <!-- Canvas for Confetti -->
+        <canvas id="confetti-canvas"></canvas>
+
+        <!-- UI Controls (Sound & State) -->
+        <div class="ui-controls" id="ui-controls" style="display: none;">
+            <button class="ui-btn btn-text" id="btn-toggle-final">Despedida</button>
+            <button class="ui-btn" id="btn-mute" title="Silenciar (M)">
+                <img id="mute-icon" src="Sonido.png" alt="Mute toggle">
+            </button>
+        </div>
+
+        <!-- 1. INTRO SCREEN -->
+        <div id="screen-intro" class="screen active">
+            <div class="gold-border"></div>
+            <h1 class="intro-title">¡FELIZ 50 CUMPLEAÑOS PAPÁ!</h1>
+            <p class="intro-instructions">Haz clic aquí para entrar • Pulsa 'M' para silenciar</p>
+        </div>
+
+        <!-- 2. SALON SCREEN -->
+        <div id="screen-salon" class="screen">
+            <!-- Background will be set in JS (sala.png) -->
+            
+            <!-- Papa Pixel Decor -->
+            <img class="room-element el-papa" src="papa pixel.png" alt="Papá">
+
+            <!-- Clickable frames -->
+            <img class="room-element clickable-frame el-esther" src="Esther pixel.png" alt="Esther" data-person="esther">
+            <img class="room-element clickable-frame el-jordi" src="Jordi pixel.png" alt="Jordi" data-person="jordi">
+            <img class="room-element clickable-frame el-andrea" src="Andrea pixel.png" alt="Andrea" data-person="andrea">
+        </div>
+
+        <!-- 3. FINAL SCREEN -->
+        <div id="screen-final" class="screen">
+            <h1 class="final-title">¡Disfruta mucho de tu día, Papá!</h1>
+            <p class="final-sub">(Haz clic aquí o pulsa ESC para volver al salón)</p>
+        </div>
+
+        <!-- MODAL OVERLAY FOR MESSAGES -->
+        <div class="modal-overlay" id="message-modal">
+            <div class="modal-content">
+                <button class="modal-close-btn" id="modal-close" title="Cerrar">X</button>
+                <div class="modal-body" id="modal-text">
+                    <!-- Message populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Audio element -->
+    <audio id="bg-music" src="cumple.mp3" loop></audio>
+
+    <script>
+        // State management
+        let state = "intro"; // "intro", "salon", "final"
+        let activeModal = null;
+        let musicMuted = false;
+        
+        // DOM Elements
+        const viewport = document.querySelector('.game-viewport');
+        const screenIntro = document.getElementById('screen-intro');
+        const screenSalon = document.getElementById('screen-salon');
+        const screenFinal = document.getElementById('screen-final');
+        const fadeOverlay = document.getElementById('fade-overlay');
+        const uiControls = document.getElementById('ui-controls');
+        
+        const btnMute = document.getElementById('btn-mute');
+        const muteIcon = document.getElementById('mute-icon');
+        const btnToggleFinal = document.getElementById('btn-toggle-final');
+        
+        const messageModal = document.getElementById('message-modal');
+        const modalText = document.getElementById('modal-text');
+        const modalClose = document.getElementById('modal-close');
+        
+        const bgMusic = document.getElementById('bg-music');
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const ctx = confettiCanvas.getContext('2d');
+
+        // Messages mapping
+        const mensajes = {
+            "esther": "Feliz cumpleaños amorcito querido, doy gracias a Dios por haber formado una familia contigo. <br><br>Eres mi cómplice perfecto, sabes que los dos unidos hacemos uno, separados estamos incompletos. <br><br>A pesar de las dificultades, siempre nos hemos demostrado confianza y fidelidad. <br><br>No cambies porque estoy muy orgullosa de ti y de nuestra vida juntos. <br><br>Te quiero, eres tan necesario como el aire que respiro. <br><br>Felices 50 años, sigues estando muy sexy.",
+            "jordi": "Papá, feliz 50 aniversario, son un montón ya. <br><br>Es increíble todo lo que has hecho a lo largo de estos 50 años, y que aún tengas energía para seguir dando guerra, y sin quedarte calvo ni tener casi canas. <br><br>La verdad es que, aunque ahora no esté tan presente con vosotros, estoy muy contento de teneros. <br><br>Muchas felicidades y a seguir.",
+            "andrea": "Quién diría que llegaríamos a estar todos juntos, aquí, celebrando un cumpleaños tan importante como el de hoy. <br><br>50 años... la vuelta del jamón, ese punto en el que dices 'Ya he vivido mucho' porque se empiezan a acumular los dolores, pero en el que también debes pensar 'Aún me queda la otra mitad por vivir'. <br><br>No sabes lo que me alegro de tenerte. Tu apoyo es como un pilar que me anima a seguir y a lograr metas solo con el objetivo de verte orgulloso y poder seguir viéndote sonreír. <br><br>Es cierto que, para ti, 50 puede parecer un número muy grande, pero piensa que yo solo he experimentado 16 años a tu lado; ni la mitad de lo que tú has vivido, pero eso es toda mi vida, y no quiero dejar de disfrutarla contigo. <br><br>Feliz 50 cumpleaños, papá. <br><br>Te quiero 3.000 toneladas."
+        };
+
+        // Confetti System
+        let particles = [];
+        const colors = [
+            { r: 212, g: 175, b: 55 }, // Gold (#d4af37)
+            { r: 255, g: 255, b: 255 } // White
+        ];
+
+        function resizeConfettiCanvas() {
+            confettiCanvas.width = viewport.clientWidth;
+            confettiCanvas.height = viewport.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeConfettiCanvas);
+        resizeConfettiCanvas();
+
+        function createConfetti() {
+            const numParticles = 80;
+            const w = confettiCanvas.width;
+            for (let i = 0; i < numParticles; i++) {
+                const colorObj = colors[Math.floor(Math.random() * colors.length)];
+                particles.push({
+                    x: Math.random() * w,
+                    y: -10,
+                    size: Math.random() * 4 + 4,
+                    speedY: Math.random() * 2.5 + 1.5,
+                    speedX: Math.random() * 2 - 1,
+                    color: `rgba(${colorObj.r}, ${colorObj.g}, ${colorObj.b}, ${Math.random() * 0.4 + 0.6})`,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 4 - 2
+                });
+            }
+        }
+
+        function updateConfetti() {
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotationSpeed;
+                
+                // Draw square particle
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+                
+                // Remove if off screen
+                if (p.y > confettiCanvas.height) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            requestAnimationFrame(updateConfetti);
+        }
+        updateConfetti();
+
+        // Screen state transitions with Pygame fade-like feel
+        function changeState(newState) {
+            if (state === newState) return;
+            
+            fadeOverlay.classList.add('fading');
+            
+            setTimeout(() => {
+                // Disable current screen
+                document.querySelector('.screen.active').classList.remove('active');
+                
+                // Change state
+                state = newState;
+                
+                // Enable new screen
+                if (state === "intro") {
+                    screenIntro.classList.add('active');
+                    uiControls.style.display = "none";
+                } else if (state === "salon") {
+                    screenSalon.classList.add('active');
+                    uiControls.style.display = "flex";
+                    btnToggleFinal.textContent = "Despedida";
+                } else if (state === "final") {
+                    screenFinal.classList.add('active');
+                    uiControls.style.display = "flex";
+                    btnToggleFinal.textContent = "Salón";
+                }
+                
+                // Remove fade
+                fadeOverlay.classList.remove('fading');
+            }, 300);
+        }
+
+        // Mute / Unmute logic
+        function toggleMusic() {
+            musicMuted = !musicMuted;
+            bgMusic.muted = musicMuted;
+            muteIcon.src = musicMuted ? "muted.png" : "Sonido.png";
+        }
+
+        // Event Listeners
+        
+        // 1. Intro Click to Enter
+        screenIntro.addEventListener('click', () => {
+            // Lazy load background image to salon when entering
+            screenSalon.style.backgroundImage = "url('sala.png')";
+            
+            // Play music (required after interaction)
+            bgMusic.volume = 0.25;
+            bgMusic.play().catch(err => console.log("Audio autoplay prevented initially: ", err));
+            
+            changeState("salon");
+        });
+
+        // 2. Salon clicks on frames
+        document.querySelectorAll('.clickable-frame').forEach(frame => {
+            frame.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const person = frame.getAttribute('data-person');
+                if (mensajes[person]) {
+                    modalText.innerHTML = mensajes[person];
+                    messageModal.classList.add('active');
+                    activeModal = messageModal;
+                    // Trigger confetti!
+                    createConfetti();
+                }
+            });
+        });
+
+        // Close modal
+        function closeModal() {
+            messageModal.classList.remove('active');
+            activeModal = null;
+        }
+        modalClose.addEventListener('click', closeModal);
+        messageModal.addEventListener('click', (e) => {
+            if (e.target === messageModal) {
+                closeModal();
+            }
+        });
+
+        // 3. Final screen click back
+        screenFinal.addEventListener('click', () => {
+            changeState("salon");
+        });
+
+        // UI control actions
+        btnToggleFinal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (state === "salon") {
+                changeState("final");
+            } else {
+                changeState("salon");
+            }
+        });
+
+        btnMute.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMusic();
+        });
+
+        // Keyboard navigation (M for music, ESC for toggling Final/Salon, SPACE/ENTER on intro)
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            
+            if (key === 'm') {
+                toggleMusic();
+            } else if (e.key === 'Escape') {
+                if (activeModal) {
+                    closeModal();
+                } else if (state === "salon") {
+                    changeState("final");
+                } else if (state === "final") {
+                    changeState("salon");
+                }
+            } else if ((e.key === ' ' || e.key === 'Enter') && state === "intro") {
+                screenIntro.click();
+            }
+        });
+    </script>
+</body>
+</html>
